@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { Inbox, Loader2 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
@@ -8,7 +9,6 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-type Props = {};
 
 const FileUpload = () => {
   const router = useRouter();
