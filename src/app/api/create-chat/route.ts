@@ -25,7 +25,7 @@ export async function POST(req: Request, res: Response) {
       fileKey: file_key,
       pdfName: file_name,
       pdfUrl: getS3Url(file_key),
-      userId: userId
+      userId
 
     }).returning({insertedId:chats.id})
 

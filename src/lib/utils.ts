@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function convertToAscii(inputStirng: string){
-  const asciiString = inputStirng.replace(/[^\x00-\x7F]/g, "");
+export function convertToAscii(inputString: string){
+  const asciiString = inputString.replace(/[^\x00-\x7F]/g, "").replace(/[^A-Za-z0-9_-]/g, '_');
   return asciiString
 }

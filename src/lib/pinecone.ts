@@ -37,8 +37,8 @@ export async function loadS3IntoPinecone(fileKey: string) {
   const pages = (await loader.load()) as PDFPage[];
 
   // 2. split and segment the pdf
-  // pages = Array(1000)
-  const documents = await Promise.all(pages.map(page => prepareDocument(page)));
+  const documents = await Promise.all(pages.map(prepareDocument));
+
 
   // 3. vectorize and embed individual documents
   const vectors = await Promise.all(documents.flat().map(embedDocument));
@@ -46,9 +46,14 @@ export async function loadS3IntoPinecone(fileKey: string) {
   // 4. Upload to pinecone
   const client = await getPineconeClient();
   const pineconeIndex = await client.Index("chatpdf");
-  const namespace = pineconeIndex.namespace(convertToAscii(fileKey));
-
-  console.log("inserting vectors into pinecone");
+  const ascii_fileKey = convertToAscii(fileKey).replace(/[^A-Za-z0-9_-]/g, '_'); // Replace non-ASCII characters
+  const namespace = pineconeIndex.namespace(ascii_fileKey);
+  try {
+    await namespace.upsert(vectors);
+  } catch (e) {
+    console.log("error creating namespace", e);
+    debugger;
+  }
   await namespace.upsert(vectors);
 
   return documents[0];
