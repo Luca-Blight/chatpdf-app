@@ -35,13 +35,13 @@ export async function uploadToS3(file: File) {
     return Promise.resolve({
       file_key,
       file_name: file.name,
-    }); 
+    });
   } catch (error) {
     console.log(error);
   }
 }
 
 export function getS3Url(file_key: string) {
-  const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.use-east-1.amazonaws.com/${file_key}`;
+  const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.amazonaws.com/${file_key}`;
   return url;
 }

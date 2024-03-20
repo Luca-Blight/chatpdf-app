@@ -7,7 +7,7 @@ export async function getMatchesfromEmbeddings(
   fileKey: string
 ) {
   const client = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-  const pineconeIndex = await client.Index('chatpdt');
+  const pineconeIndex = await client.Index('chatpdf');
 
   try {
     const asciiNamespace = convertToAscii(fileKey);

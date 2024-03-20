@@ -9,7 +9,6 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-
 const FileUpload = () => {
   const router = useRouter();
   const [uploading, setUploading] = React.useState(false); // fix error below
@@ -49,10 +48,10 @@ const FileUpload = () => {
           return;
         }
         mutate(data, {
-          onSuccess: ({chat_id}) => {
+          onSuccess: ({ chat_id }) => {
             console.log(data);
-            toast.success("Chat created!");
-            router.push(`/chat/${chat_id}`) // how does push work?
+            toast.success('Chat created!');
+            router.push(`/chat/${chat_id}`); // how does push work?
           },
           onError: (err) => {
             toast.error('Error creating chat');
@@ -79,15 +78,16 @@ const FileUpload = () => {
         <input {...getInputProps()} />
         {uploading || isLoading ? (
           <>
+            {/* loading state */}
             <Loader2 className='h-10 w-10 text-blue-500 animate-spin' />
-            <span className='mt-2 text-sm text-slate-400'>
+            <p className='mt-2 text-sm text-slate-400'>
               Spilling Tea to GPT...
-            </span>
+            </p>
           </>
         ) : (
           <>
             <Inbox className='w-10 h-10 text-blue-500' />
-            <span className='mt-2 text-sm text-slate-400'>Drop PDF Here</span>
+            <p className='mt-2 text-sm text-slate-400'>Drop PDF Here</p>
           </>
         )}
       </div>
