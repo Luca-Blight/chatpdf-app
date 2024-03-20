@@ -1,9 +1,12 @@
 import { userSubscriptions } from '@/lib/db/schema';
+import { stripe } from '@/lib/stripe';
 import { auth, currentUser } from '@clerk/nextjs';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 
 import { NextResponse } from 'next/server';
+
+const return_url = process.env.NEXT_PUBLIC_URL + '/';
 
 export async function GET() {
   try {
@@ -18,7 +21,45 @@ export async function GET() {
       .select()
       .from(userSubscriptions)
       .where(eq(userSubscriptions.userId, userId));
+
+    if (_userSubscriptions[0] && _userSubscriptions[0].stripeCustomerId) {
+      // trying to cancel at the billing portal
+      const stripeSession = await stripe.billingPortal.sessions.create({
+        customer: _userSubscriptions[0].stripeCustomerId,
+        return_url, // redirect if cancel or transaction finished
+      });
+      return NextResponse.json({ url: stripeSession.url });
+    }
+    // user's first time trying to subscribe
+    const stripeSession = await stripe.checkout.sessions.create({
+      success_url: return_url,
+      cancel_url: return_url,
+      payment_method_types: ['card'],
+      mode: 'subscription',
+      billing_address_collection: 'auto',
+      customer_email: user?.emailAddresses[0].emailAddress,
+      line_items: [
+        {
+          price_data: {
+            currency: 'USD',
+            product_data: {
+              name: 'ChatPDF Pro',
+              description: 'Unlimited PDF sessions',
+            },
+            unit_amount: 500,
+            recurring: {
+              interval: 'month',
+            },
+          },
+        },
+      ],
+      metadata: {
+        userId,
+      },
+    });
+    return NextResponse.json({ url: stripeSession.url });
   } catch (error) {
-    console.log('Error fetching');
+    console.log('Stripe error', error);
+    return new NextResponse('internlal server error', { status: 500 });
   }
 }
