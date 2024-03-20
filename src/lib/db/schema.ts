@@ -31,3 +31,14 @@ import {
     createdAt: timestamp("created_at").notNull().defaultNow(),
     role: userSystemEnum("role").notNull(),
   });
+
+
+  export const userSubscriptions = pgTable("userSubscriptions", {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 256 }).notNull().unique(),
+    stripCustomerId: varchar('stripe_customer_id', {length:256}).notNull().unique(),
+    stripeSubscriptionId: varchar('stripe_subscription_id', {length:256}).unique(),
+    stripePriceId: varchar('stripe_price_id', {length:256}),
+    stripeCurrentPeriod: timestamp('stripe_current_period'),
+  
+  })
